@@ -1,28 +1,28 @@
 # Module Reference
 
-17 feature modules, all lazy-loaded under `/workspace/:id`. Each module has its own routing module, components, services, and state. No module imports another module.
+17 feature remotes, all independently built and deployed Nx applications. Each remote exposes its routes via `./Routes` in its `module-federation.config.ts`. The shell loads them into `WorkspaceShellComponent`'s `<router-outlet>` via `loadRemoteModule`.
 
 ### Quick-Reference Table
 
-| Module | Route | Feature Key | Bundle | Team | Real-time |
-|--------|-------|-------------|--------|------|-----------|
-| Home | `/home` | _(none)_ | S | Platform | Light (notifications) |
-| Playground | `/playground` | `playground` | M | AI | No |
-| Inbox | `/inbox` | `inbox` | L | Engagement | **Yes** (SignalR) |
-| Inbox Activity | `/inbox-activity` | `inboxActivity` | M | Engagement | No |
-| Analytics | `/analytics` | `analytics` | XL | Growth | No |
-| AI Hub | `/ai-hub` | `aiHub` | L | AI | No |
-| Campaigns | `/campaigns` | `campaigns` | L | Engagement | No |
-| Comment Acquisition | `/comment-acquisition` | `commentAcquisition` | M | Engagement | No |
-| Customers | `/customers` | `customers` | S | Engagement | No |
-| Identity | `/identity` | `identity` | S | Growth | No |
-| Marketplace | `/marketplace` | `marketplace` | M | Growth | No |
-| Logs | `/logs` | `logs` | S | Platform | No |
-| Text-to-Speech | `/text-to-speech` | `textToSpeech` | S | AI | No |
-| Setup | `/setup` | `setup` | S | Platform | No |
-| Payment | `/payment` | `payment` | M | Platform | No |
-| Subscription Details | `/subscription-details` | `subscriptionDetails` | S | Platform | No |
-| Settings | `/settings` | `settings` | XL | Platform | No |
+| Remote | Route | Feature Key | Bundle | Team | Real-time | Exposed Module |
+|--------|-------|-------------|--------|------|-----------|----------------|
+| home | `/home` | _(none)_ | S | Platform | Light (notifications) | `./Routes` |
+| playground | `/playground` | `playground` | M | AI | No | `./Routes` |
+| inbox | `/inbox` | `inbox` | L | Engagement | **Yes** (SignalR) | `./Routes` |
+| inbox-activity | `/inbox-activity` | `inboxActivity` | M | Engagement | No | `./Routes` |
+| analytics | `/analytics` | `analytics` | XL | Growth | No | `./Routes` |
+| ai-hub | `/ai-hub` | `aiHub` | L | AI | No | `./Routes` |
+| campaigns | `/campaigns` | `campaigns` | L | Engagement | No | `./Routes` |
+| comment-acquisition | `/comment-acquisition` | `commentAcquisition` | M | Engagement | No | `./Routes` |
+| customers | `/customers` | `customers` | S | Engagement | No | `./Routes` |
+| identity | `/identity` | `identity` | S | Growth | No | `./Routes` |
+| marketplace | `/marketplace` | `marketplace` | M | Growth | No | `./Routes` |
+| logs | `/logs` | `logs` | S | Platform | No | `./Routes` |
+| text-to-speech | `/text-to-speech` | `textToSpeech` | S | AI | No | `./Routes` |
+| setup | `/setup` | `setup` | S | Platform | No | `./Routes` |
+| payment | `/payment` | `payment` | M | Platform | No | `./Routes` |
+| subscription-details | `/subscription-details` | `subscriptionDetails` | S | Platform | No | `./Routes` |
+| settings | `/settings` | `settings` | XL | Platform | No | `./Routes` |
 
 > All routes are relative to `/workspace/:id`. Bundle size categories: **S** < 50 KB, **M** 50-150 KB, **L** 150-300 KB, **XL** 300 KB+.
 
@@ -34,11 +34,12 @@ Dashboard and overview. Default landing for admin and owner roles.
 
 | | |
 |---|---|
+| Nx app | `apps/home` |
 | Route | `/workspace/:id/home` |
 | Feature key | None (always accessible) |
-| Components | HomeComponent, RedirectToLatestWorkspaceComponent |
-| Dependencies | WorkspaceContextService |
-| Notes | Both a real feature (dashboard with metrics) and the landing page. No feature guard since every role should reach it as a fallback. |
+| Components | `HomeComponent`, `RedirectToLatestWorkspaceComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | Platform |
 
 ---
 
@@ -48,11 +49,13 @@ Chatbot builder. Complex visual editor.
 
 | | |
 |---|---|
+| Nx app | `apps/playground` |
 | Route | `/workspace/:id/playground` |
 | Feature key | `playground` |
-| Components | BotBuilderComponent |
-| Dependencies | WorkspaceContextService, BotBuilderApiService |
-| Notes | Self-contained editing tool. Consider `UnsavedChangesGuard` if editing state needs protection. |
+| Components | `BotBuilderComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | AI |
+| Notes | Self-contained editing tool. Consider `unsavedChangesGuard` if editing state needs protection. |
 
 ---
 
@@ -62,11 +65,13 @@ Live chat. Real-time messaging between agents and end users.
 
 | | |
 |---|---|
+| Nx app | `apps/inbox` |
 | Route | `/workspace/:id/inbox`, `/workspace/:id/inbox/:userId` |
 | Feature key | `inbox` |
-| Components | InboxComponent |
+| Components | `InboxComponent` |
 | Real-time | Heavy SignalR consumer. Receives messages, typing indicators, assignment events through the workspace-scoped connection. |
-| Dependencies | WorkspaceContextService, SignalRService, NotificationService |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/signalr`, `@pwa/ui`, `@pwa/utils` |
+| Team | Engagement |
 | Notes | Default landing for agent role. The `:userId` param selects a conversation. |
 
 ---
@@ -77,10 +82,12 @@ Activity log for inbox events. Separate from inbox.
 
 | | |
 |---|---|
+| Nx app | `apps/inbox-activity` |
 | Route | `/workspace/:id/inbox-activity` |
 | Feature key | `inboxActivity` |
-| Components | InboxActivityComponent |
-| Dependencies | WorkspaceContextService |
+| Components | `InboxActivityComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | Engagement |
 
 ---
 
@@ -90,14 +97,16 @@ Dashboards and reports. Multiple sub-views with their own full-page layouts.
 
 | | |
 |---|---|
+| Nx app | `apps/analytics` |
 | Route | `/workspace/:id/analytics` |
 | Feature key | `analytics` |
 | Sub-routes | `/sessions`, `/service-quality`, `/retention`, `/agent-monitor`, `/user-behavior`, `/words`, `/funnels/:funnelId`, `/quality-management`, `/survey`, `/sla` |
 | Nested sub-routes | Under `/sla`: `/conversation-details`, `/agent-performance`, `/breach-analysis`, `/time-distribution`, `/performance-trends` |
 | Feature-gated sub-routes | `quality-management` (key: `qualityManagementAnalytics`), `survey` (key: `survey`), `sla` (key: `slaAnalytics`) |
-| Components | ~15 components |
-| Dependencies | WorkspaceContextService, AnalyticsApiService |
-| Notes | Default landing for analyst role. Sub-route feature gating uses the same `FeatureGuard` with different data keys on child routes. |
+| Components | ~15 standalone components |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Growth |
+| Notes | Default landing for analyst role. Sub-route feature gating uses the same `featureGuard` imported from `@pwa/workspace-context` with different data keys on child routes. |
 
 ---
 
@@ -107,14 +116,15 @@ AI training, knowledge base, skills, AI assistant, generative AI.
 
 | | |
 |---|---|
+| Nx app | `apps/ai-hub` |
 | Route | `/workspace/:id/ai-hub` |
 | Feature key | `aiHub` |
 | Sub-routes | `/list`, `/list/edit`, `/test`, `/knowledge`, `/knowledge/add-unit`, `/knowledge/edit-unit/:unitId`, `/ai-assistant`, `/generative-ai`, `/create/step/:step`, `/skills/:skillId`, `/:tab/locked` |
-| Feature-gated sub-routes | `list` and `list/edit` (key: `aiTraining`), `test` (key: `testCases`), `knowledge` (key: `aiKnowledge`), `ai-assistant` (key: `aiAssistant`), `generative-ai` (key: `generativeAi`) |
+| Feature-gated sub-routes | `list` (key: `aiTraining`), `test` (key: `testCases`), `knowledge` (key: `aiKnowledge`), `ai-assistant` (key: `aiAssistant`), `generative-ai` (key: `generativeAi`) |
 | CanDeactivate | On `/knowledge/add-unit`, `/knowledge/edit-unit/:unitId`, `/ai-assistant`, `/generative-ai` |
-| Components | ~10 components |
-| Dependencies | WorkspaceContextService, AiHubApiService |
-| Notes | The `/:tab/locked` route shows a locked state when a sub-feature isn't available in the current plan. |
+| Components | ~10 standalone components |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | AI |
 
 ---
 
@@ -124,12 +134,14 @@ Broadcast messaging. Multi-step creation flows with channel-specific variants.
 
 | | |
 |---|---|
+| Nx app | `apps/campaigns` |
 | Route | `/workspace/:id/campaigns` |
 | Feature key | `campaigns` |
 | Sub-routes | `/list`, `/channelSelect`, `/create/:broadcastId`, `/create/:broadcastId/step/:step`, `/create-whatsapp/:broadcastId/step/:step`, `/create-sms/:broadcastId/step/:step`, `/create-email/:broadcastId/step/:step`, `/edit/:broadcastId`, `/insights/:broadcastId/:broadcastLogId` |
-| Guards | `StepValidationGuard` on step routes (validates step 1-4), `UnsavedChangesGuard` on create routes |
-| Dependencies | WorkspaceContextService, CampaignApiService |
-| Components | ~12 components |
+| Internal guards | `stepValidationGuard` on step routes (validates step 1-4), `unsavedChangesGuard` on create routes |
+| Components | ~12 standalone components |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/utils` |
+| Team | Engagement |
 
 ---
 
@@ -139,12 +151,14 @@ Facebook comment automation. Step-based creation.
 
 | | |
 |---|---|
+| Nx app | `apps/comment-acquisition` |
 | Route | `/workspace/:id/comment-acquisition` |
 | Feature key | `commentAcquisition` |
 | Sub-routes | `/list`, `/create/:channel/:commentId`, `/create/:channel/:commentId/step/:step`, `/edit/:commentId` |
-| Guards | `StepValidationGuard` on step routes (validates step 1-3), `UnsavedChangesGuard` on create routes |
-| Dependencies | WorkspaceContextService |
-| Components | ~5 components |
+| Internal guards | `stepValidationGuard` on step routes (validates step 1-3), `unsavedChangesGuard` on create routes |
+| Components | ~5 standalone components |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | Engagement |
 
 ---
 
@@ -154,10 +168,12 @@ Customer/contact center. CRM functionality.
 
 | | |
 |---|---|
+| Nx app | `apps/customers` |
 | Route | `/workspace/:id/customers` |
 | Feature key | `customers` |
-| Components | CustomerCenterComponent |
-| Dependencies | WorkspaceContextService, CustomerApiService |
+| Components | `CustomerCenterComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Engagement |
 
 ---
 
@@ -167,10 +183,12 @@ Identity and user management.
 
 | | |
 |---|---|
+| Nx app | `apps/identity` |
 | Route | `/workspace/:id/identity` |
 | Feature key | `identity` |
-| Components | IdentityManagerComponent |
-| Dependencies | WorkspaceContextService, AuthService |
+| Components | `IdentityManagerComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/auth`, `@pwa/ui` |
+| Team | Growth |
 
 ---
 
@@ -180,13 +198,14 @@ App marketplace. Browse, preview, and install integrations.
 
 | | |
 |---|---|
+| Nx app | `apps/marketplace` |
 | Route | `/workspace/:id/marketplace` |
 | Feature key | `marketplace` |
 | Sub-routes | `/:categoryId`, `/:categoryId/:appId`, `/:categoryId/:appId/install` |
-| Resolvers | `CategoryResolver` (on module entry), `AppResolver` (on app preview/install) |
-| Components | ~3 components |
-| Dependencies | WorkspaceContextService, MarketplaceApiService |
-| Notes | Has its own resolvers for category and app data. These are module-scoped, not shared. |
+| Internal resolvers | `categoryResolver` (on entry), `appResolver` (on app preview/install) -- remote-local, not shared |
+| Components | ~3 standalone components |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Growth |
 
 ---
 
@@ -196,10 +215,12 @@ Log viewer.
 
 | | |
 |---|---|
+| Nx app | `apps/logs` |
 | Route | `/workspace/:id/logs` |
 | Feature key | `logs` |
-| Components | LogManagerComponent |
-| Dependencies | WorkspaceContextService |
+| Components | `LogManagerComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | Platform |
 
 ---
 
@@ -209,11 +230,13 @@ Text-to-speech configuration.
 
 | | |
 |---|---|
+| Nx app | `apps/text-to-speech` |
 | Route | `/workspace/:id/text-to-speech` |
 | Feature key | `textToSpeech` |
-| CanDeactivate | UnsavedChangesGuard |
-| Components | TextToSpeechComponent |
-| Dependencies | WorkspaceContextService, MediaApiService |
+| CanDeactivate | `unsavedChangesGuard` |
+| Components | `TextToSpeechComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | AI |
 
 ---
 
@@ -223,10 +246,12 @@ Initial workspace configuration wizard.
 
 | | |
 |---|---|
+| Nx app | `apps/setup` |
 | Route | `/workspace/:id/setup` |
 | Feature key | `setup` |
-| Components | SetupComponent |
-| Dependencies | WorkspaceContextService, OnboardingService |
+| Components | `SetupComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui` |
+| Team | Platform |
 
 ---
 
@@ -236,11 +261,13 @@ Plan selection and checkout. Workspace-scoped.
 
 | | |
 |---|---|
+| Nx app | `apps/payment` |
 | Route | `/workspace/:id/payment` |
 | Feature key | `payment` |
 | Sub-routes | `/pricing`, `/checkout/:plan`, `/downgrade/:plan` |
-| Components | PaymentPlansComponent, PlanUpgradeComponent, DowngradePlanComponent |
-| Dependencies | WorkspaceContextService, PaymentApiService, BillingService |
+| Components | `PaymentPlansComponent`, `PlanUpgradeComponent`, `DowngradePlanComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Platform |
 
 ---
 
@@ -250,24 +277,28 @@ Current subscription information for the workspace.
 
 | | |
 |---|---|
+| Nx app | `apps/subscription-details` |
 | Route | `/workspace/:id/subscription-details` |
 | Feature key | `subscriptionDetails` |
-| Components | SubscriptionDetailsComponent |
-| Dependencies | WorkspaceContextService, BillingService |
+| Components | `SubscriptionDetailsComponent` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Platform |
 
 ---
 
 ## Settings
 
-Workspace settings. Largest module. Uses a secondary sidenav via `SettingsShellComponent`.
+Workspace settings. Largest remote. Uses a secondary sidenav provided by the shell's `SettingsShellComponent`.
 
 | | |
 |---|---|
+| Nx app | `apps/settings` |
 | Route | `/workspace/:id/settings` |
 | Feature key | `settings` |
-| Layout | SettingsShellComponent provides a sub-sidenav. Settings sections render in its router-outlet. |
-| Dependencies | WorkspaceContextService, BrandConfigService, BillingService |
+| Layout | SettingsShellComponent (in shell) provides a sub-sidenav. Settings sections render in its `<router-outlet>`. |
 | Default | Redirects to `/info` |
+| Shared libs consumed | `@pwa/workspace-context`, `@pwa/brand`, `@pwa/ui`, `@pwa/data-access` |
+| Team | Platform |
 
 ### Settings sub-routes
 
@@ -306,71 +337,74 @@ Workspace settings. Largest module. Uses a secondary sidenav via `SettingsShellC
 | Purchase history | `/purchase-history` | |
 | Transactions | `/transaction` | `transactions` |
 
-Components: ~26 across all sections. Channel settings may lazy-load their own sub-modules (call, ai-agent) for heavier sections.
+Components: ~26 standalone components across all sections.
 
 ---
 
-## Module Contract Template
+## Standard Federation Config (Template)
 
-Every new feature module **must** follow this directory structure:
+Every remote follows this pattern:
 
+```typescript
+// apps/<remote-name>/module-federation.config.ts
+import { ModuleFederationConfig } from '@nx/module-federation';
+
+const config: ModuleFederationConfig = {
+  name: '<remote-name>',
+  exposes: {
+    './Routes': 'apps/<remote-name>/src/app/remote-entry/entry.routes.ts',
+  },
+};
+export default config;
 ```
-module-name/
-  module-name.module.ts          # NgModule with imports, declarations, providers
-  module-name-routing.module.ts  # Child routes only
-  module-name.component.ts       # Root component (rendered by router-outlet)
-  services/
-    module-name.service.ts       # API calls
-    module-name-state.service.ts # BehaviorSubject state (module-scoped)
-  components/                    # Internal components (not exported)
-  models/                        # Module-specific interfaces
+
+```typescript
+// apps/<remote-name>/webpack.config.ts
+import { withModuleFederation } from '@nx/angular/module-federation';
+import config from './module-federation.config';
+export default withModuleFederation(config, { dts: false });
+```
+
+```typescript
+// apps/<remote-name>/src/app/remote-entry/entry.routes.ts
+import { Routes } from '@angular/router';
+
+export const remoteRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('../<name>.component').then(c => c.<Name>Component),
+  },
+];
 ```
 
 ### Rules
 
-1. **Never import another feature module.** Feature modules are isolated by design.
-2. **Never export components.** No cross-module component sharing. If a component is needed by more than one module, move it to `SharedModule`.
-3. **Shared UI goes in `SharedModule`.** Pipes, directives, and presentational components that appear in multiple modules belong there.
-4. **Module-scoped state is destroyed on navigation away.** Services provided in the module's `providers` array are created when the module loads and garbage-collected when the user navigates out. Do not store long-lived state here; use a `CoreModule` service instead.
-5. **All API services inject `WorkspaceContextService` for the workspace ID.** Never read the workspace ID from the route directly inside a service -- use the centralized context.
-6. **Use the module's routing file for child routes.** Never define child routes in the parent `AppRoutingModule` or any other module's routing file.
+1. **Every remote exposes exactly `./Routes`.** The shell expects this contract. No other exposed modules.
+2. **Top-level guards are the shell's responsibility.** The remote's `entry.routes.ts` has no `canActivate` on the root path. Sub-route guards (e.g., `stepValidationGuard`, `unsavedChangesGuard`) are defined inside the remote.
+3. **Remotes never import other remotes.** Nx boundary rules enforce this. Shared code goes in `libs/shared/*`.
+4. **Remote-local services are scoped to the remote.** Use `providedIn: 'root'` inside the remote -- it creates a singleton within the remote's injector, not the shell's.
+5. **Shared services must come from `libs/shared/*`.** Services shared between the shell and remotes (e.g., `WorkspaceContextService`, `AuthService`) are shared singletons via MF.
+6. **All components are standalone.** No NgModules in remotes.
 
 ---
 
-## Module Dependency Rules
+## Remote Dependency Rules
 
 ```
-CoreModule (services, guards, interceptors)
-    ^
-    |--- Feature modules can import CoreModule services (via DI)
-    |--- Feature modules can import SharedModule (via NgModule imports)
-    |
-SharedModule (components, pipes, directives)
-    ^
-    |--- Feature modules can import SharedModule
-    |
-Feature Module A  <--X-->  Feature Module B   (NEVER)
+Shell (host)
+  |
+  |--- can import: libs/shared/*
+  |--- cannot import: apps/* (any remote)
+  |
+Remote A
+  |
+  |--- can import: libs/shared/*
+  |--- cannot import: apps/* (shell or any other remote)
+  |
+libs/shared/*
+  |
+  |--- can import: other libs/shared/*
+  |--- cannot import: apps/* (shell or any remote)
 ```
 
-### Allowed
-
-| From | To | How |
-|------|----|-----|
-| Feature module | CoreModule services | Dependency injection (`@Injectable({ providedIn: 'root' })`) |
-| Feature module | SharedModule | `imports: [SharedModule]` in the feature NgModule |
-| Feature module | Router (navigate to another feature) | `Router.navigate()` -- no direct import of the target module |
-
-### Forbidden
-
-| From | To | Why |
-|------|----|-----|
-| Feature module | Another feature module | Creates coupling, breaks lazy-load boundaries, causes circular dependencies |
-| Feature module | Another feature module's components | Use SharedModule instead |
-| Feature module | Another feature module's services | Promote the service to CoreModule if truly shared |
-
-### Cross-Module Communication Patterns
-
-- **Shared data:** Move the service to `CoreModule` (singleton, root-provided). Both modules inject the same instance.
-- **Navigation-based:** Use `Router.navigate()` with route params or query params to pass context.
-- **Event-based:** Use a `CoreModule` event bus service (RxJS `Subject`) when two modules need to react to the same domain event without direct coupling.
-- **Shared UI:** Move the component/pipe/directive to `SharedModule` and import it in both feature modules.
+Enforced by Nx `@nx/enforce-module-boundaries` lint rule. CI fails if violated.

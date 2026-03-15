@@ -11,7 +11,17 @@
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
       "Bash(pkill -f \"vite\")",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:angular.dev)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:nx.dev)",
+      "WebFetch(domain:www.angulararchitects.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:blog.angular-university.io)",
+      "WebFetch(domain:angular.love)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:module-federation.io)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }
