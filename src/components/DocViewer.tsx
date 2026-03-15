@@ -7,11 +7,12 @@ import './DocViewer.css';
 
 interface DocViewerProps {
   content: string;
+  onNavigate: (slug: string) => void;
 }
 
 const SVG_REGEX = /<svg[\s\S]*?<\/svg>/gi;
 
-export default function DocViewer({ content }: DocViewerProps) {
+export default function DocViewer({ content, onNavigate }: DocViewerProps) {
   const { cleaned, svgMap } = useMemo(() => {
     const map = new Map<string, string>();
     let i = 0;
@@ -30,6 +31,25 @@ export default function DocViewer({ content }: DocViewerProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, [rehypeHighlight, { ignoreMissing: true }]]}
         components={{
+          a({ href, children, ...rest }) {
+            // Intercept internal .md links and navigate within the app
+            if (href && /^\.?\/?\d{2}-[\w-]+\.md$/i.test(href.replace(/^\.\//, ''))) {
+              const slug = href.replace(/^\.\//, '').replace(/\.md$/i, '');
+              return (
+                <a
+                  href={`#${slug}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate(slug);
+                  }}
+                  {...rest}
+                >
+                  {children}
+                </a>
+              );
+            }
+            return <a href={href} {...rest}>{children}</a>;
+          },
           div(props) {
             const svgKey = (props as Record<string, unknown>)['data-svg'] as string | undefined;
             if (svgKey && svgMap.has(svgKey)) {
