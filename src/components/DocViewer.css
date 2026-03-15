@@ -1,0 +1,176 @@
+.doc-viewer {
+  max-width: 100ch;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+
+/* Headings */
+.doc-viewer h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.doc-viewer h2 {
+  font-size: 1.45rem;
+  font-weight: 600;
+  margin: 3rem 0 1rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.doc-viewer h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+  color: var(--accent);
+}
+
+.doc-viewer h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text-secondary);
+}
+
+/* Paragraphs & text */
+.doc-viewer p {
+  margin-bottom: 1.25rem;
+  color: var(--text-primary);
+}
+
+.doc-viewer strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.doc-viewer a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.doc-viewer a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Lists */
+.doc-viewer ul,
+.doc-viewer ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.doc-viewer li {
+  margin-bottom: 0.35rem;
+  line-height: 1.7;
+}
+
+.doc-viewer li > ul,
+.doc-viewer li > ol {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+}
+
+/* Inline code */
+.doc-viewer code {
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  color: var(--accent-hover);
+}
+
+/* Code blocks */
+.doc-viewer pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.55;
+}
+
+.doc-viewer pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  border-radius: 0;
+}
+
+/* Tables */
+.doc-viewer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.doc-viewer thead {
+  position: sticky;
+  top: 0;
+}
+
+.doc-viewer th {
+  background: var(--bg-surface);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.doc-viewer td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.doc-viewer tr:hover td {
+  background: var(--bg-hover);
+}
+
+/* Blockquotes */
+.doc-viewer blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1.5rem 0;
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border-radius: 0 6px 6px 0;
+}
+
+.doc-viewer blockquote p {
+  margin-bottom: 0.5rem;
+}
+
+.doc-viewer blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Horizontal rules */
+.doc-viewer hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* SVG diagrams */
+.doc-viewer svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
