@@ -10,7 +10,8 @@
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
-      "Bash(pkill -f \"vite\")"
+      "Bash(pkill -f \"vite\")",
+      "WebSearch"
     ]
   }
 }
